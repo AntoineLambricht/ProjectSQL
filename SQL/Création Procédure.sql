@@ -67,8 +67,8 @@ DECLARE
 	adresse_privee_sh ALIAS FOR $3;
 	origine_sh ALIAS FOR $4;
 	type_pouvoir_sh ALIAS FOR $5;
-	puissance_pouvoir_sh ALIAS $6;
-	faction_sh ALIAS FOR $7,
+	puissance_pouvoir_sh ALIAS FOR $6;
+	faction_sh ALIAS FOR $7;
 	etat_sh ALIAS FOR $8;
 	id INTEGER:=0;
 BEGIN
