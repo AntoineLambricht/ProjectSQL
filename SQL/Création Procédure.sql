@@ -9,7 +9,7 @@ DECLARE
 	id INTEGER:=0;
 BEGIN
 	INSERT INTO projetshyeld.agents VALUES
-		(DEFAULT,nom_agent,prenom_agent,'actif')
+		(DEFAULT,nom_agent,prenom_agent,0,'actif')
 		RETURNING id_agent INTO id;
 
 	return id;
@@ -69,7 +69,6 @@ DECLARE
 	type_pouvoir_sh ALIAS FOR $5;
 	puissance_pouvoir_sh ALIAS FOR $6;
 	faction_sh ALIAS FOR $7;
-	--etat_sh ALIAS FOR $8;
 	id INTEGER:=0;
 BEGIN
 	IF EXISTS(SELECT * FROM projetshyeld.superheros sh
@@ -106,26 +105,7 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
---création du type de retour de la fonction zones de dangers
-CREATE TYPE projetshyeld.zonededangerReturn
-AS (x1 INTEGER, y1 INTEGER,x2 INTEGER,y2 INTEGER);
 
-
---Zones de dangers
-CREATE OR REPLACE FUNCTION projetshyeld.zonededanger()
-	RETURNS SETOF exercice.evolutionCompteReturn AS $$
-DECLARE
-	reperage RECORD;
-	sortie projetshyeld.zonededangerReturn;
-BEGIN
-	FOR reperage IN SELECT * FROM projetshyeld.reperages r 
-		WHERE (DATE(r.date_reperage)+INTERVAL '10 day') <= NOW()
-		AND 
-	LOOP
-	
-	END LOOP;
-END;
-$$ LANGUAGE 'plpgsql';
 
 
 

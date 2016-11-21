@@ -1,4 +1,4 @@
-﻿--DROP SCHEMA IF EXISTS projetshyeld CASCADE;
+﻿DROP SCHEMA IF EXISTS projetshyeld CASCADE;
 
 --Création du shema
 CREATE SCHEMA projetshyeld;
@@ -17,8 +17,8 @@ CREATE TABLE projetshyeld.agents(
 		DEFAULT NEXTVAL ('projetshyeld.pk_agent'),
 	nom VARCHAR(100) NOT NULL CHECK (nom<>''),
 	prenom VARCHAR(100) NOT NULL CHECK (prenom<>''),
-	etat VARCHAR(8) NOT NULL CHECK (etat IN ('actif','mort','retraite')),
-	nb_reperage INTEGER NOT NULL CHECK (nb_reperage>=0)
+	nb_reperage INTEGER NOT NULL CHECK (nb_reperage>=0),
+	etat VARCHAR(8) NOT NULL CHECK (etat IN ('actif','mort','retraite'))
 );
 
 CREATE TABLE projetshyeld.superheros(

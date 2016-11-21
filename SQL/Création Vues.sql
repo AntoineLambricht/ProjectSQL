@@ -18,17 +18,21 @@ CREATE OR REPLACE VIEW projetshyeld.dernierReperages AS
 				FROM projetshyeld.reperages r2
 				WHERE r2.id_sh = sh.id_sh);
 
+--DROP VIEW projetshyeld.zonededanger;
 CREATE OR REPLACE VIEW projetshyeld.zonededanger AS
-	SELECT DISTINCT dr1.coord_x AS "Zone 1 (x)",dr1.coord_y AS "Zone 1 (y)",dr2.coord_x AS "Zone 2 (x)",dr2.coord_y AS "Zone 2 (y)"
+	SELECT DISTINCT concat('(',dr1.coord_x,'-',dr1.coord_y,')') AS "Zone 1",concat('(',dr2.coord_x,'-',dr2.coord_y,')') AS "Zone 2"
+	--SELECT DISTINCT dr1.coord_x AS "Zone 1 (x)",dr1.coord_y AS "Zone 1 (y)",dr2.coord_x AS "Zone 2 (x)",dr2.coord_y AS "Zone 2 (y)"
 	FROM projetshyeld.dernierReperages dr1 , projetshyeld.dernierReperages dr2 , 
 		projetshyeld.superheros sh1 , projetshyeld.superheros sh2
-	WHERE (DATE(dr1.date_reperage)+INTERVAL '10 day') <= NOW()
-	AND (DATE(dr2.date_reperage)+INTERVAL '10 day') <= NOW()
+	WHERE (DATE(dr1.date_reperage)+INTERVAL '10 day') >= NOW()
+	AND (DATE(dr2.date_reperage)+INTERVAL '10 day') >= NOW()
 	AND dr1.id_sh = sh1.id_sh
 	AND dr2.id_sh = sh2.id_sh
-	AND (dr1.coord_x+1=dr2.coord_x OR dr1.coord_x-1=dr2.coord_x
-		OR dr1.coord_y+1=dr2.coord_y OR dr1.coord_y-1=dr2.coord_y)
+	AND ((dr1.coord_x+1=dr2.coord_x AND dr1.coord_y=dr2.coord_y)
+		OR (dr1.coord_x-1=dr2.coord_x AND dr1.coord_y=dr2.coord_y)
+		OR (dr1.coord_y+1=dr2.coord_y AND dr1.coord_x=dr2.coord_x)
+		OR (dr1.coord_y-1=dr2.coord_y AND dr1.coord_x=dr2.coord_x)
+		OR (dr1.coord_x=dr2.coord_x AND dr1.coord_y=dr2.coord_y))
+		
 	AND sh1.faction!=sh2.faction
 	AND dr1.id_reperage<dr2.id_reperage;
-
-SELECT * FROM projetshyeld.zonededanger;
