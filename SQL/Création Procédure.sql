@@ -68,11 +68,7 @@ DECLARE
 	origine_sh ALIAS FOR $4;
 	type_pouvoir_sh ALIAS FOR $5;
 	puissance_pouvoir_sh ALIAS FOR $6;
-<<<<<<< HEAD
-	faction_sh ALIAS FOR $7,
-=======
 	faction_sh ALIAS FOR $7;
->>>>>>> origin/master
 	etat_sh ALIAS FOR $8;
 	id INTEGER:=0;
 BEGIN
