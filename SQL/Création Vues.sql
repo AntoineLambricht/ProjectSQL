@@ -10,4 +10,25 @@ CREATE OR REPLACE VIEW projetshyeld.heroperdu AS
 				WHERE r2.id_sh = sh.id_sh)
 	AND (DATE(r.date_reperage)+INTERVAL '15 day') <= NOW();
 
-SELECT * FROM projetshyeld.heroperdu
+CREATE OR REPLACE VIEW projetshyeld.dernierReperages AS
+	SELECT r.*
+	FROM projetshyeld.reperages r ,projetshyeld.superheros sh
+	WHERE r.id_sh=sh.id_sh
+	AND r.date_reperage = (SELECT MAX(r2.date_reperage)
+				FROM projetshyeld.reperages r2
+				WHERE r2.id_sh = sh.id_sh);
+
+CREATE OR REPLACE VIEW projetshyeld.zonededanger AS
+	SELECT DISTINCT dr1.coord_x AS "Zone 1 (x)",dr1.coord_y AS "Zone 1 (y)",dr2.coord_x AS "Zone 2 (x)",dr2.coord_y AS "Zone 2 (y)"
+	FROM projetshyeld.dernierReperages dr1 , projetshyeld.dernierReperages dr2 , 
+		projetshyeld.superheros sh1 , projetshyeld.superheros sh2
+	WHERE (DATE(dr1.date_reperage)+INTERVAL '10 day') <= NOW()
+	AND (DATE(dr2.date_reperage)+INTERVAL '10 day') <= NOW()
+	AND dr1.id_sh = sh1.id_sh
+	AND dr2.id_sh = sh2.id_sh
+	AND (dr1.coord_x+1=dr2.coord_x OR dr1.coord_x-1=dr2.coord_x
+		OR dr1.coord_y+1=dr2.coord_y OR dr1.coord_y-1=dr2.coord_y)
+	AND sh1.faction!=sh2.faction
+	AND dr1.id_reperage<dr2.id_reperage;
+
+SELECT * FROM projetshyeld.zonededanger;

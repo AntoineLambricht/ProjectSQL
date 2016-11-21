@@ -59,7 +59,7 @@ END
 $$ LANGUAGE plpgsql;
 
 -- ajouterSuperheros
-CREATE OR REPLACE FUNCTION projetshyeld.ajoutersh(varchar(100),varchar(100),varchar(255),varchar(100),varchar(100),INTEGER,varchar(8),varchar(6)) RETURNS INTEGER AS 
+CREATE OR REPLACE FUNCTION projetshyeld.ajoutersh(varchar(100),varchar(100),varchar(255),varchar(100),varchar(100),INTEGER,varchar(8)) RETURNS INTEGER AS 
 $$
 DECLARE 
 	nom_civil_sh ALIAS FOR $1;
@@ -69,7 +69,7 @@ DECLARE
 	type_pouvoir_sh ALIAS FOR $5;
 	puissance_pouvoir_sh ALIAS FOR $6;
 	faction_sh ALIAS FOR $7;
-	etat_sh ALIAS FOR $8;
+	--etat_sh ALIAS FOR $8;
 	id INTEGER:=0;
 BEGIN
 	IF EXISTS(SELECT * FROM projetshyeld.superheros sh
@@ -84,6 +84,48 @@ BEGIN
 	return id;
 END
 $$ LANGUAGE plpgsql;
+
+--mortSuperHeros
+CREATE OR REPLACE FUNCTION projetshyeld.mortsh(INTEGER) RETURNS INTEGER AS 
+$$
+DECLARE 
+	id_s ALIAS FOR $1;
+BEGIN
+	IF NOT EXISTS(SELECT * FROM projetshyeld.superheros sh
+			WHERE sh.id_sh = id_s
+			AND etat = 'vivant') THEN
+		RAISE 'super hero n existe pas ou est deja mort';
+	END IF;
+	
+	UPDATE projetshyeld.superheros
+	SET etat='mort'
+	WHERE id_sh=id_s;
+
+	return id_s;
+	
+END
+$$ LANGUAGE plpgsql;
+
+--création du type de retour de la fonction zones de dangers
+CREATE TYPE projetshyeld.zonededangerReturn
+AS (x1 INTEGER, y1 INTEGER,x2 INTEGER,y2 INTEGER);
+
+
+--Zones de dangers
+CREATE OR REPLACE FUNCTION projetshyeld.zonededanger()
+	RETURNS SETOF exercice.evolutionCompteReturn AS $$
+DECLARE
+	reperage RECORD;
+	sortie projetshyeld.zonededangerReturn;
+BEGIN
+	FOR reperage IN SELECT * FROM projetshyeld.reperages r 
+		WHERE (DATE(r.date_reperage)+INTERVAL '10 day') <= NOW()
+		AND 
+	LOOP
+	
+	END LOOP;
+END;
+$$ LANGUAGE 'plpgsql';
 
 
 
