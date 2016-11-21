@@ -67,11 +67,16 @@ DECLARE
 	adresse_privee_sh ALIAS FOR $3;
 	origine_sh ALIAS FOR $4;
 	type_pouvoir_sh ALIAS FOR $5;
-	puissance_pouvoir_sh ALIAS $6;
+	puissance_pouvoir_sh ALIAS FOR $6;
 	faction_sh ALIAS FOR $7,
 	etat_sh ALIAS FOR $8;
 	id INTEGER:=0;
 BEGIN
+	IF EXISTS(SELECT * FROM projetshyeld.superheros sh
+			WHERE sh.nom_sh = nom_sh_sh
+			AND etat = 'vivant') THEN
+		RAISE 'un super hero vivant existe déjà avec ce nom de super heros)';
+	END IF;
 	INSERT INTO projetshyeld.superheros VALUES
 		(DEFAULT,nom_civil_sh,nom_sh_sh,adresse_privee_sh,origine_sh,type_pouvoir_sh,puissance_pouvoir_sh,faction_sh,'vivant')
 		RETURNING id_sh INTO id;
