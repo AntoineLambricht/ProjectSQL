@@ -18,6 +18,7 @@ CREATE TABLE projetshyeld.agents(
 	nom VARCHAR(100) NOT NULL CHECK (nom<>''),
 	prenom VARCHAR(100) NOT NULL CHECK (prenom<>''),
 	nb_reperage INTEGER NOT NULL CHECK (nb_reperage>=0),
+	mdp VARCHAR(100) NOT NULL CHECK (prenom<>''),
 	etat VARCHAR(8) NOT NULL CHECK (etat IN ('actif','mort','retraite'))
 );
 
@@ -47,8 +48,8 @@ CREATE TABLE projetshyeld.combats(
 CREATE TABLE projetshyeld.reperages(
 	id_reperage INTEGER PRIMARY KEY 
 		DEFAULT NEXTVAL ('projetshyeld.pk_reperage'),
-	id_agent INTEGER REFERENCES projetshyeld.agents (id_agent),
-	id_sh INTEGER REFERENCES projetshyeld.superheros (id_sh),
+	id_agent INTEGER  NOT NULL REFERENCES projetshyeld.agents (id_agent),
+	id_sh INTEGER NOT NULL REFERENCES projetshyeld.superheros (id_sh),
 	coord_x INTEGER NOT NULL CHECK (coord_x >= 0 AND coord_x <= 100),
 	coord_y INTEGER NOT NULL CHECK (coord_y >= 0 AND coord_y <= 100),
 	date_reperage TIMESTAMP NOT NULL,

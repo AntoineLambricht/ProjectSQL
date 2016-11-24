@@ -1,15 +1,16 @@
 ﻿-- Procédures
 
 --inscrireAgent
-CREATE OR REPLACE FUNCTION projetshyeld.inscrireAgent(varchar(100),varchar(100)) RETURNS INTEGER AS 
+CREATE OR REPLACE FUNCTION projetshyeld.inscrireAgent(varchar(100),varchar(100),varchar(100)) RETURNS INTEGER AS 
 $$
 DECLARE 
 	nom_agent ALIAS FOR $1;
 	prenom_agent ALIAS FOR $2;
+	mdp_agent ALIAS FOR $3;
 	id INTEGER:=0;
 BEGIN
 	INSERT INTO projetshyeld.agents VALUES
-		(DEFAULT,nom_agent,prenom_agent,0,'actif')
+		(DEFAULT,nom_agent,prenom_agent,0,mdp_agent,'actif')
 		RETURNING id_agent INTO id;
 
 	return id;
@@ -105,10 +106,35 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+-- ajouter reperages
 
+CREATE OR REPLACE FUNCTION projetshyeld.ajouterreperage(INTEGER,VARCHAR(100),INTEGER,INTEGER,TIMESTAMP) RETURNS INTEGER AS 
+$$
+DECLARE 
+	id_ag ALIAS FOR $1;
+	nom_suhe ALIAS FOR $2;
+	c_x ALIAS FOR $3;
+	c_y ALIAS FOR $4;
+	date_rep ALIAS FOR $5;
+	id_suhe INTEGER:=-1;
+	id INTEGER:=0;
+BEGIN
+	SELECT sh.id_sh INTO id_suhe
+	FROM projetshyeld.superheros sh
+	WHERE sh.nom_sh=nom_suhe AND etat='vivant';
+	
+	IF (id_suhe<0)
+	THEN 
+		RAISE 'Aucun hero vivant avec ce nom';
+	END IF;
 
+	INSERT INTO projetshyeld.reperages 
+	VALUES(DEFAULT,id_ag,id_suhe,c_x,c_y,date_rep)
+	RETURNING id_reperage INTO id;
 
-
+	return id;
+END
+$$ LANGUAGE plpgsql;
 --SELECT * FROM projetshyeld.mortAgent(1);
 
 --SELECT * FROM projetshyeld.agents;

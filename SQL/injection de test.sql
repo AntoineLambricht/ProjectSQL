@@ -24,7 +24,7 @@ INSERT INTO projetshyeld.reperages VALUES(DEFAULT,1,2,45,87,'2016-08-05 18:19:03
 INSERT INTO projetshyeld.reperages VALUES(DEFAULT,1,2,45,87,'2016-08-05 16:19:05');
 INSERT INTO projetshyeld.reperages VALUES(DEFAULT,1,2,49,87,'2015-08-05 18:19:03');
 INSERT INTO projetshyeld.reperages VALUES(DEFAULT,1,2,47,87,'2014-08-05 18:19:03');
-
+SELECT * FROM projetshyeld.ajouterreperage(1,'Botman',54,98,'2016-11-23 10:15:03');
 
 SELECT * FROM projetshyeld.reperages;
 SELECT * FROM projetshyeld.agents;
