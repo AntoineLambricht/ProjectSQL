@@ -1,14 +1,19 @@
 ﻿--Création vues
 
 CREATE OR REPLACE VIEW projetshyeld.heroperdu AS
-	SELECT sh.nom_sh AS "Nom de Super-hero",
+	(SELECT sh.nom_sh AS "Nom de Super-hero",
 		concat('(',r.coord_x,'-',r.coord_y,')') AS "Coordonées"
 	FROM projetshyeld.superheros sh,projetshyeld.reperages r
 	WHERE r.id_sh=sh.id_sh
 	AND r.date_reperage = (SELECT MAX(r2.date_reperage)
 				FROM projetshyeld.reperages r2
 				WHERE r2.id_sh = sh.id_sh)
-	AND (DATE(r.date_reperage)+INTERVAL '15 day') <= NOW();
+	AND (DATE(r.date_reperage)+INTERVAL '15 day') <= NOW());
+	/*UNION
+	((SELECT sh2.nom_sh ,'Jammais aperçu'
+	FROM projetshyeld.superheros sh2
+	WHERE sh2.id_sh NOT IN (SELECT r3.id_sh 
+				FROM projetshyeld.reperages r3)));*/
 
 CREATE OR REPLACE VIEW projetshyeld.dernierReperages AS
 	SELECT r.*

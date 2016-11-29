@@ -26,7 +26,7 @@ BEGIN
 	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
 			WHERE a.id_agent = id_a 
 			AND etat = 'actif' OR etat = 'retraite') THEN
-		RAISE 'agent n existe pas ou est deja mort';
+		RAISE EXCEPTION 'Cet agent n existe pas ou est deja mort';
 	END IF;
 	
 	UPDATE projetshyeld.agents
@@ -47,7 +47,7 @@ BEGIN
 	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
 			WHERE a.id_agent = id_a 
 			AND etat = 'actif') THEN
-		RAISE 'agent n existe pas, est déja retraité ou mort';
+		RAISE EXCEPTION 'Cet agent n existe pas, est mort ou est déjà retraité';
 	END IF;
 	
 	UPDATE projetshyeld.agents
@@ -75,7 +75,7 @@ BEGIN
 	IF EXISTS(SELECT * FROM projetshyeld.superheros sh
 			WHERE sh.nom_sh = nom_sh_sh
 			AND etat = 'vivant') THEN
-		RAISE 'un super hero vivant existe déjà avec ce nom de super heros)';
+		RAISE EXCEPTION 'un super hero vivant existe déjà avec ce nom de super heros)';
 	END IF;
 	INSERT INTO projetshyeld.superheros VALUES
 		(DEFAULT,nom_civil_sh,nom_sh_sh,adresse_privee_sh,origine_sh,type_pouvoir_sh,puissance_pouvoir_sh,faction_sh,'vivant')
@@ -86,22 +86,23 @@ END
 $$ LANGUAGE plpgsql;
 
 --mortSuperHeros
-CREATE OR REPLACE FUNCTION projetshyeld.mortsh(INTEGER) RETURNS INTEGER AS 
+CREATE OR REPLACE FUNCTION projetshyeld.mortsh(varchar(100)) RETURNS INTEGER AS 
 $$
 DECLARE 
-	id_s ALIAS FOR $1;
+	nom_s ALIAS FOR $1;
 BEGIN
 	IF NOT EXISTS(SELECT * FROM projetshyeld.superheros sh
-			WHERE sh.id_sh = id_s
+			WHERE sh.nom_sh = nom_s
 			AND etat = 'vivant') THEN
-		RAISE 'super hero n existe pas ou est deja mort';
+		RAISE EXCEPTION 'Aucun super-hero vivant existe avec ce nom';
 	END IF;
 	
-	UPDATE projetshyeld.superheros
+	UPDATE projetshyeld.superheros 
 	SET etat='mort'
-	WHERE id_sh=id_s;
+	WHERE nom_sh = nom_s
+	AND etat = 'vivant';
 
-	return id_s;
+	return 1;
 	
 END
 $$ LANGUAGE plpgsql;
@@ -125,13 +126,13 @@ BEGIN
 	
 	IF (id_suhe IS NULL)
 	THEN 
-		RAISE 'Aucun hero vivant avec ce nom';
+		RAISE EXCEPTION 'Aucun hero vivant avec ce nom';
 	END IF;
 
 	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
 			WHERE a.id_agent = id_ag
 			AND a.etat = 'actif') THEN
-		RAISE 'auncun agent actif avec cet id';
+		RAISE EXCEPTION 'Auncun agent actif avec cet id';
 	END IF;
 
 	INSERT INTO projetshyeld.reperages 

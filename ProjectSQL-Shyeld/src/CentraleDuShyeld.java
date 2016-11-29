@@ -31,14 +31,16 @@ public class CentraleDuShyeld {
 		int choix;
 
 		do {
+			System.out.println("---------------------------------");
 			System.out.println("1 -> Inscription d'un agent");
 			System.out.println("2 -> Supression d'un agent");
 			System.out.println("3 -> Heros perdu");
 			System.out.println("4 -> Suprimmer un super-hero");
 			System.out.println("5 -> Zones de danger");
-			System.out.println("6 -> Relevés des d'un agent");
+			System.out.println("6 -> Relevés d'un agent");
 			System.out.println("7 -> Statistiques");
 			System.out.println("0 -> Quitter");
+			System.out.println("---------------------------------");
 
 			choix = sc.nextInt();
 
@@ -71,18 +73,43 @@ public class CentraleDuShyeld {
 	}
 
 	private static void heroPerdu(Connection conn) {
-		// TODO Auto-generated method stub
+		try {
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.heroperdu");
+			ResultSet rs = ps.executeQuery();
+			System.out.println("Nom de super-hero  -  Coordonnée");
+			while (rs.next()) {
+
+				String nom = rs.getString(1);
+				String coord = rs.getString(2);
+
+				System.out.println(nom + " | " + coord);
+			}
+		} catch (SQLException se) {
+			System.out.println("Erreur lors de l'utilisation de la vue hero perdu!");
+			se.printStackTrace();
+			System.exit(1);
+		}
 
 	}
 
 	private static void suprimmerSuperHero(Connection conn) {
-		// TODO Auto-generated method stub
+		System.out.println("Nom du super-hero:");
+		sc.nextLine();
+		String nom = sc.nextLine();
+		try {
+
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.mortsh(?)");
+			ps.setString(1, nom);
+			ps.executeQuery();
+			System.out.println(nom + " est mort! RIP");
+
+		} catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
 
 	}
 
 	private static void zoneDeDanger(Connection conn) {
-		// TODO Auto-generated method stub
-
 		try {
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.zonededanger");
 			ResultSet rs = ps.executeQuery();
@@ -113,36 +140,46 @@ public class CentraleDuShyeld {
 	}
 
 	private static void supressionAgent(Connection conn) {
-		System.out.println("-------Ajout d'un agent----------");
-		System.out.println("Pourquoi voulez vous désactiver ce agent?");
-		System.out.println("1 -> Retraité");
-		System.out.println("2 -> Morts");
-		System.out.println("autre -> Annuler");
-		
-		int choix = sc.nextInt();
-		if(choix == 1){
-			System.out.println("Id de l'agent:");
-			try {
-				
-				PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.inscrireAgent(?,?,?)");
-				//ps.setString(1, );
-				ResultSet rs = ps.executeQuery();
-				while (rs.next()) {
+		boolean ok;
+		do {
+			ok = true;
+			System.out.println("-------Ajout d'un agent----------");
+			System.out.println("Pourquoi voulez vous désactiver un agent?");
+			System.out.println("1 -> Retraite");
+			System.out.println("2 -> Mort");
+			System.out.println("autre -> Annuler");
 
-					int id = rs.getInt("inscrireagent");
+			int choix = sc.nextInt();
+			if (choix == 1) {
+				System.out.println("Id de l'agent:");
+				int id = sc.nextInt();
+				try {
 
-					System.out.println("Id de l'agent : "+id);
+					PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.retraiteAgent(?)");
+					ps.setInt(1, id);
+					ps.executeQuery();
+					System.out.println("Agent n°" + id + " est maintenant à la retraite!");
+
+				} catch (SQLException se) {
+					System.out.println(se.getMessage());
+					ok = false;
 				}
-			} catch (SQLException se) {
-				System.out.println("Erreur lors de l'utilisation de l'inscription d'un agent!");
-				se.printStackTrace();
-				System.exit(1);
+			} else if (choix == 2) {
+				System.out.println("Id de l'agent:");
+				int id = sc.nextInt();
+				try {
+
+					PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.mortAgent(?)");
+					ps.setInt(1, id);
+					ps.executeQuery();
+					System.out.println("Agent n°" + id + " est maintenant déclaré mort! RIP");
+
+				} catch (SQLException se) {
+					System.out.println(se.getMessage());
+					ok = false;
+				}
 			}
-		}else if(choix == 2){
-			
-		}else{
-			
-		}
+		} while (!ok);
 
 	}
 
@@ -156,7 +193,7 @@ public class CentraleDuShyeld {
 		System.out.print("Mot de passe:");
 		String mdp = sc.nextLine();
 		try {
-			
+
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.inscrireAgent(?,?,?)");
 			ps.setString(1, nom);
 			ps.setString(2, prenom);
@@ -166,7 +203,7 @@ public class CentraleDuShyeld {
 
 				int id = rs.getInt("inscrireagent");
 
-				System.out.println("Id de l'agent : "+id);
+				System.out.println("Id de l'agent : " + id);
 			}
 		} catch (SQLException se) {
 			System.out.println("Erreur lors de l'utilisation de l'inscription d'un agent!");
