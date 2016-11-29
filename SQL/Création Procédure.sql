@@ -123,9 +123,15 @@ BEGIN
 	FROM projetshyeld.superheros sh
 	WHERE sh.nom_sh=nom_suhe AND etat='vivant';
 	
-	IF (id_suhe<0)
+	IF (id_suhe IS NULL)
 	THEN 
 		RAISE 'Aucun hero vivant avec ce nom';
+	END IF;
+
+	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
+			WHERE a.id_agent = id_ag
+			AND a.etat = 'actif') THEN
+		RAISE 'auncun agent actif avec cet id';
 	END IF;
 
 	INSERT INTO projetshyeld.reperages 
