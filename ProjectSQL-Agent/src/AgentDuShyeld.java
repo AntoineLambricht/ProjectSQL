@@ -78,7 +78,7 @@ public class AgentDuShyeld {
 
 				switch (choix) {
 				case 1:
-					infoSuperHero(conn);
+					infoSuperHero(conn, id);
 					break;
 				case 2:
 					ajouterCombat(conn, id);
@@ -126,30 +126,100 @@ public class AgentDuShyeld {
 
 	}
 
-	private static void infoSuperHero(Connection conn) {
+	private static void infoSuperHero(Connection conn, int idAgent) {
 		try {
 			sc.nextLine();
 			System.out.print("Nom du hero :");
 			String nomSuperHero = sc.nextLine();
-			PreparedStatement ps = conn.prepareStatement(
-					"SELECT * FROM projetshyeld.infoShVivant WHERE nom_sh=?");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.infoShVivant WHERE nom_sh=?");
 			ps.setString(1, nomSuperHero);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				System.out.println(rs.getString("nom_civil") + "-" + rs.getString("adresse_privee") + "-"
-						+ rs.getString("origine") + "-" + rs.getString("type_pouvoir") + "-"
-						+ rs.getInt("puissance_pouvoir") + "-" + rs.getString("faction") + "-" + rs.getString("Coordonées"));
-				
+				System.out.println(
+						rs.getString("nom_civil") + "-" + rs.getString("adresse_privee") + "-" + rs.getString("origine")
+								+ "-" + rs.getString("type_pouvoir") + "-" + rs.getInt("puissance_pouvoir") + "-"
+								+ rs.getString("faction") + "-" + rs.getString("Coordonées"));
+
 			} else {
 				System.out.println("Ce hero n'existe pas ou est mort!");
 				int choix;
 				do {
-					System.out.println("Voulez vous l'ajouter ?");
+					System.out.println("Voulez vous ajouter " + nomSuperHero + " ?");
 					System.out.println("1 -> Oui");
 					System.out.println("2 -> Non");
 					choix = sc.nextInt();
 					if (choix == 1) {
-						//TODO ajouter un sh et ajouter un reperage
+						// TODO ajouter un sh et ajouter un reperage
+						sc.nextLine();
+						String temp;
+						System.out
+								.println("Quel est son nom civil ? (Tapez \"?\" si vous n'avez pas cette information)");
+						temp = sc.nextLine();
+						String nomCivil = (temp != "?") ? temp : null;
+						System.out.println(
+								"Quel est son adresse privée ? (Tapez \"?\" si vous n'avez pas cette information)");
+						temp = sc.nextLine();
+						String adresse = (temp != "?") ? temp : null;
+						System.out.println("Quel est son origine ? (Tapez \"?\" si vous n'avez pas cette information)");
+						temp = sc.nextLine();
+						String origine = (temp != "?") ? temp : null;
+						System.out.println(
+								"Quel est son type de pouvoir ? (Tapez \"?\" si vous n'avez pas cette information)");
+						temp = sc.nextLine();
+						String type_pouvoir = (temp != "?") ? temp : null;
+						System.out.println(
+								"Quel est la puissance de son pouvoir? (Tapez \"?\" si vous n'avez pas cette information)");
+						int puissance_pouvoir = sc.nextInt();
+						int choixFaction;
+						String faction = "";
+						do {
+							System.out.println("Quel est sa faction ?");
+							System.out.println("1 -> Marvelle");
+							System.out.println("2 -> Dece");
+							choixFaction = sc.nextInt();
+							if (choixFaction == 1)
+								faction = "marvelle";
+							else if (choixFaction == 2)
+								faction = "dece";
+							else
+								System.out.println("le choix de faction doit etre 1 ou 2");
+						} while (choixFaction != 1 && choixFaction != 2);
+
+						System.out.println("Où l'avez vous vu ?");
+						System.out.println("Coordonées:");
+						System.out.print("   -X:");
+						int x = sc.nextInt();
+						System.out.print("   -Y:");
+						int y = sc.nextInt();
+						Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+						// sql
+						try {
+
+							PreparedStatement ps2 = conn
+									.prepareStatement("SELECT * FROM projetshyeld.ajoutersh(?,?,?,?,?,?,?)");
+							ps2.setString(1, nomCivil);
+							ps2.setString(2, nomSuperHero);
+							ps2.setString(3, adresse);
+							ps2.setString(4, origine);
+							ps2.setString(5, type_pouvoir);
+							ps2.setInt(6, puissance_pouvoir);
+							ps2.setString(7, faction);
+							ps2.executeQuery();
+
+							PreparedStatement ps3 = conn
+									.prepareStatement("SELECT * FROM projetshyeld.ajouterreperage(?,?,?,?,?)");
+							ps3.setInt(1, idAgent);
+							ps3.setString(2, nomSuperHero);
+							ps3.setInt(3, x);
+							ps3.setInt(4, y);
+							ps3.setTimestamp(5, timestamp);
+							ps3.executeQuery();
+							System.out.println("Reperage de " + nomSuperHero + " en (" + x + ";" + y + ") enregisté !");
+
+						} catch (SQLException se) {
+							System.out.println(se.getMessage());
+						}
+
 					}
 				} while (choix != 1 && choix != 2);
 

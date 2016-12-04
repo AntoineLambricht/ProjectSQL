@@ -14,8 +14,8 @@ SELECT * FROM projetshyeld.ajoutersh('Donatien Grolaux','Gloriaux','Monoir Grola
 SELECT * FROM projetshyeld.ajoutersh('Bernard Henriet','Hulkriet','Inde','Terre','Force et Vert',185,'marvelle');
 
 --ajout de reperages 
-SELECT * FROM projetshyeld.ajouterreperage(1,'Docteur Dramas',2,3,'2016-11-23 10:15:05');
-SELECT * FROM projetshyeld.ajouterreperage(1,'Gloriaux',1,3,'2016-11-23 10:15:05');
+SELECT * FROM projetshyeld.ajouterreperage(2,'Docteur Dramas',2,3,'2016-12-2 10:15:05');
+SELECT * FROM projetshyeld.ajouterreperage(3,'Gloriaux',1,3,'2016-12-3 10:15:04');
 --SELECT * FROM projetshyeld.ajouterreperage(1,'Batman',54,98,'2016-11-23 10:15:04');
 --SELECT * FROM projetshyeld.ajouterreperage(1,'Batman',54,98,'2016-11-23 10:15:03');
 --SELECT * FROM projetshyeld.ajouterreperage(1,'Batman',54,98,'2016-11-23 10:15:02');

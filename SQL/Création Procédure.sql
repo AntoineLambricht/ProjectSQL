@@ -9,6 +9,21 @@ DECLARE
 	mdp_agent ALIAS FOR $3;
 	id INTEGER:=0;
 BEGIN
+	IF (nom_agent='')
+	THEN 
+		RAISE EXCEPTION 'Le nom ne peut pas etre vide!';
+	END IF;
+
+	IF (prenom_agent='')
+	THEN 
+		RAISE EXCEPTION 'Le prenom ne peut pas etre vide!';
+	END IF;
+
+	IF (mdp_agent='')
+	THEN 
+		RAISE EXCEPTION 'Le mot de passe ne peut pas etre vide!';
+	END IF;
+	
 	INSERT INTO projetshyeld.agents VALUES
 		(DEFAULT,nom_agent,prenom_agent,0,mdp_agent,'actif')
 		RETURNING id_agent INTO id;
@@ -60,6 +75,7 @@ END
 $$ LANGUAGE plpgsql;
 
 -- ajouterSuperheros
+-- ,INTEGER,INTEGER,INTEGER,TIMESTAMP
 CREATE OR REPLACE FUNCTION projetshyeld.ajoutersh(varchar(100),varchar(100),varchar(255),varchar(100),varchar(100),INTEGER,varchar(8)) RETURNS INTEGER AS 
 $$
 DECLARE 
@@ -70,6 +86,12 @@ DECLARE
 	type_pouvoir_sh ALIAS FOR $5;
 	puissance_pouvoir_sh ALIAS FOR $6;
 	faction_sh ALIAS FOR $7;
+
+	--id_ag ALIAS FOR $8;
+	--c_x ALIAS FOR $9;
+	--c_y ALIAS FOR $10;
+	--date_rep ALIAS FOR $11;
+
 	id INTEGER:=0;
 BEGIN
 	IF EXISTS(SELECT * FROM projetshyeld.superheros sh
@@ -77,9 +99,17 @@ BEGIN
 			AND etat = 'vivant') THEN
 		RAISE EXCEPTION 'un super hero vivant existe déjà avec ce nom de super heros)';
 	END IF;
+
+	IF ( faction_sh!='marvelle' AND faction_sh != 'dece' )
+	THEN 
+		RAISE EXCEPTION 'La faction du super hero ne peut etre que "marvelle" ou "dece"';
+	END IF;
+	-- ajoute un hero
 	INSERT INTO projetshyeld.superheros VALUES
-		(DEFAULT,nom_civil_sh,nom_sh_sh,adresse_privee_sh,origine_sh,type_pouvoir_sh,puissance_pouvoir_sh,faction_sh,'vivant')
+		(DEFAULT,nom_civil_sh,nom_sh_sh,adresse_privee_sh,origine_sh,type_pouvoir_sh,puissance_pouvoir_sh,faction_sh,0,0,0,'vivant')
 		RETURNING id_sh INTO id;
+	--ajoute un reperage 
+	--SELECT * FROM projetshyeld.ajouterreperage(id_ag,nom_sh_sh,c_x,c_y,date_rep);
 
 	return id;
 END
@@ -151,6 +181,18 @@ BEGIN
 	return id;
 END
 $$ LANGUAGE plpgsql;
+
+--Procedure pour triger
+-- augmenter nbReperages
+CREATE OR REPLACE FUNCTION triger_incNbReperages() RETURNS TRIGGER AS $triger_incNbReperages$
+BEGIN
+	UPDATE projetshyeld.agents
+	SET nb_reperage = nb_reperage + 1
+	WHERE id_agent = NEW.id_agent;
+	RETURN NULL;
+END;
+$triger_incNbReperages$ LANGUAGE plpgsql;
+
 --SELECT * FROM projetshyeld.mortAgent(1);
 
 --SELECT * FROM projetshyeld.agents;
