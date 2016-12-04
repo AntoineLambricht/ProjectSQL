@@ -38,3 +38,4 @@ SELECT * FROM projetshyeld.superheros;
 SELECT * FROM projetshyeld.heroperdu;
 SELECT * FROM projetshyeld.dernierReperages;
 SELECT * FROM projetshyeld.zonededanger;
+SELECT * FROM projetshyeld.infoShVivant;

@@ -120,6 +120,15 @@ DECLARE
 	id_suhe INTEGER:=-1;
 	id INTEGER:=0;
 BEGIN
+	IF (c_x > 100 OR c_x <0)
+	THEN 
+		RAISE EXCEPTION 'Coordonée x doit etre comprise entre 0 et 100';
+	END IF;
+
+	IF (c_y > 100 OR c_y <0)
+	THEN 
+		RAISE EXCEPTION 'Coordonée y doit etre comprise entre 0 et 100';
+	END IF;
 	SELECT sh.id_sh INTO id_suhe
 	FROM projetshyeld.superheros sh
 	WHERE sh.nom_sh=nom_suhe AND etat='vivant';

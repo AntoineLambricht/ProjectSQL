@@ -143,7 +143,7 @@ public class CentraleDuShyeld {
 		boolean ok;
 		do {
 			ok = true;
-			System.out.println("-------Ajout d'un agent----------");
+			System.out.println("-------Desactivation d'un agent----------");
 			System.out.println("Pourquoi voulez vous désactiver un agent?");
 			System.out.println("1 -> Retraite");
 			System.out.println("2 -> Mort");
