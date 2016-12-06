@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class CentraleDuShyeld {
 
 	private final static Scanner sc = new Scanner(System.in);
@@ -192,12 +194,13 @@ public class CentraleDuShyeld {
 		String prenom = sc.nextLine();
 		System.out.print("Mot de passe:");
 		String mdp = sc.nextLine();
+		String hashed = BCrypt.hashpw(mdp, BCrypt.gensalt());
 		try {
 
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.inscrireAgent(?,?,?)");
 			ps.setString(1, nom);
 			ps.setString(2, prenom);
-			ps.setString(3, mdp);
+			ps.setString(3, hashed);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 

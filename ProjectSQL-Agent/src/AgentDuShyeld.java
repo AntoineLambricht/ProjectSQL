@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Scanner;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class AgentDuShyeld {
 
 	private final static Scanner sc = new Scanner(System.in);
@@ -38,15 +40,15 @@ public class AgentDuShyeld {
 			String mdp = sc.next();
 
 			try {
-				// bad select , agent can be dead or retreated
-				PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.agents WHERE id_agent=?");
+				PreparedStatement ps = conn
+						.prepareStatement("SELECT * FROM projetshyeld.agents WHERE id_agent=? AND etat='actif'");
 				ps.setInt(1, id);
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()) {
 					String nom = rs.getString("nom");
 					String prenom = rs.getString("prenom");
 					String mdpagent = rs.getString("mdp");
-					if (mdp.equals(mdpagent)) {
+					if (BCrypt.checkpw(mdp, mdpagent)) {
 						System.out.println("Bienvenue " + nom + " " + prenom + "!");
 						estConnecte = true;
 					} else {
@@ -123,7 +125,79 @@ public class AgentDuShyeld {
 	}
 
 	private static void ajouterCombat(Connection conn, int idAgent) {
+		int idCombat = 0;
+		boolean combatCree = false;
+		System.out.println("Ajout du Combat:");
+		sc.nextLine();
+		System.out.println(" *Coordonées:");
+		System.out.print("   -X:");
+		int x = sc.nextInt();
+		System.out.print("   -Y:");
+		int y = sc.nextInt();
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		try {
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.ajouterCombat(?,?,?,?)");
+			ps.setInt(1, idAgent);
+			ps.setInt(2, x);
+			ps.setInt(3, y);
+			ps.setTimestamp(4, timestamp);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				idCombat = rs.getInt(1);
+				System.out.println("Combat n°" + idCombat + " en (" + x + ";" + y + ") enregisté !");
+				combatCree = true;
+			}
 
+		} catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+		if (combatCree) {
+			System.out.println();
+			System.out.println(" *Participations:");
+			int choixParticipation;
+			do {
+				sc.nextLine();
+				System.out.print("Nom du hero :");
+				String nomSuperHero = sc.nextLine();
+				int choixResult;
+				do {
+
+					System.out.println("Quel est le resultat ?");
+					System.out.println("1 -> Victoire");
+					System.out.println("2 -> Défaite");
+					System.out.println("3 -> Ni victoire ni défaite");
+					choixResult = sc.nextInt();
+				} while (choixResult < 1 || choixResult > 3);
+				
+				String result = null;
+				if(choixResult == 1) result = "victoire";
+				if(choixResult == 2) result = "defaite";
+				
+				try {
+
+					PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.ajouterParticipation(?,?,?)");
+					ps.setInt(1, idCombat);
+					ps.setString(2, nomSuperHero);
+					ps.setString(3, result);
+					ps.executeQuery();
+					
+
+				} catch (SQLException se) {
+					System.out.println(se.getMessage());
+					se.printStackTrace();
+				}
+				
+				
+				do{
+				System.out.println("Ajouter une autre participation ?");
+				System.out.println("1 -> Oui");
+				System.out.println("2 -> Non");
+				choixParticipation = sc.nextInt();
+				}while (choixParticipation != 1 && choixParticipation != 2);
+			} while (choixParticipation == 1);
+			
+			
+		}
 	}
 
 	private static void infoSuperHero(Connection conn, int idAgent) {
@@ -217,18 +291,6 @@ public class AgentDuShyeld {
 							ps2.setInt(10, y);
 							ps2.setTimestamp(11, timestamp);
 							ps2.executeQuery();
-
-							// PreparedStatement ps3 = conn
-							// .prepareStatement("SELECT * FROM
-							// projetshyeld.ajouterreperage(?,?,?,?,?)");
-							// ps3.setInt(1, idAgent);
-							// ps3.setString(2, nomSuperHero);
-							// ps3.setInt(3, x);
-							// ps3.setInt(4, y);
-							// ps3.setTimestamp(5, timestamp);
-							// ps3.executeQuery();
-							// System.out.println("Reperage de " + nomSuperHero
-							// + " en (" + x + ";" + y + ") enregisté !");
 
 						} catch (SQLException se) {
 							System.out.println(se.getMessage());

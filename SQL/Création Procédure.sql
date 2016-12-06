@@ -183,7 +183,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION ajouterCombat(INTEGER,INTEGER,INTEGER,TIMESTAMP) RETURNS INTEGER AS 
+CREATE OR REPLACE FUNCTION projetshyeld.ajouterCombat(INTEGER,INTEGER,INTEGER,TIMESTAMP) RETURNS INTEGER AS 
 $$
 DECLARE
 	id_ag ALIAS FOR $1;
@@ -209,7 +209,7 @@ BEGIN
 	END IF;
 
 	INSERT INTO projetshyeld.combats
-	VALUES (DEFAULT,id_ag,c_x,c_y,date_rep)
+	VALUES (DEFAULT,id_ag,c_x,c_y,date_c)
 	RETURNING id_combat INTO id;
 
 	return id;
@@ -217,22 +217,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION ajouterParticipation(INTEGER,VARCHAR(100),varchar(8))RETURNS INTEGER AS 
+CREATE OR REPLACE FUNCTION projetshyeld.ajouterParticipation(INTEGER,VARCHAR(100),varchar(8))RETURNS INTEGER AS 
 $$
 DECLARE
-	id_combat ALIAS FOR $1;
+	id_c ALIAS FOR $1;
 	nom_suhe ALIAS FOR $2;
 	result ALIAS FOR $3;
 	
 	id_suhe INTEGER:=-1;
 BEGIN
-	IF( resultat NOT IN ('victoire','defaite') AND resultat != NULL)
+	IF( result NOT IN ('victoire','defaite') AND result != NULL)
 	THEN
 		RAISE EXCEPTION 'Le resultat du combat ne peut etre que "victoire", "defaite" ou null' ;
 	END IF;
 
 	IF NOT EXISTS(SELECT * FROM projetshyeld.combats c
-			WHERE c.id_combats = id_combat) THEN
+			WHERE c.id_combat = id_c) THEN
 		RAISE EXCEPTION 'Aucun combat avec cet id';
 	END IF;
 
@@ -246,7 +246,7 @@ BEGIN
 	END IF;
 
 	INSERT INTO projetshyeld.combats
-	VALUES (id_combat,id_suhe,result);
+	VALUES (id_c,id_suhe,result);
 
 	return 0;
 	
