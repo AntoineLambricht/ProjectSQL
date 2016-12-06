@@ -134,11 +134,13 @@ public class AgentDuShyeld {
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.infoShVivant WHERE nom_sh=?");
 			ps.setString(1, nomSuperHero);
 			ResultSet rs = ps.executeQuery();
+
 			if (rs.next()) {
-				System.out.println(
-						rs.getString("nom_civil") + "-" + rs.getString("adresse_privee") + "-" + rs.getString("origine")
-								+ "-" + rs.getString("type_pouvoir") + "-" + rs.getInt("puissance_pouvoir") + "-"
-								+ rs.getString("faction") + "-" + rs.getString("Coordonées"));
+				System.out.println(rs.getString("nom_civil") + "-" + rs.getString("adresse_privee") + "-"
+						+ rs.getString("origine") + "-" + rs.getString("type_pouvoir") + "-"
+						+ rs.getInt("puissance_pouvoir") + "-" + rs.getString("faction") + "-"
+						+ rs.getString("nb_victoire") + "-" + rs.getString("nb_defaite") + "-" + rs.getString("nb_part")
+						+ "-" + rs.getString("Coordonées"));
 
 			} else {
 				System.out.println("Ce hero n'existe pas ou est mort!");
@@ -149,26 +151,32 @@ public class AgentDuShyeld {
 					System.out.println("2 -> Non");
 					choix = sc.nextInt();
 					if (choix == 1) {
-						// TODO ajouter un sh et ajouter un reperage
 						sc.nextLine();
 						String temp;
 						System.out
 								.println("Quel est son nom civil ? (Tapez \"?\" si vous n'avez pas cette information)");
 						temp = sc.nextLine();
-						String nomCivil = (temp != "?") ? temp : null;
+						String nomCivil = null;
+						if (!temp.equals("?"))
+							nomCivil = temp;
 						System.out.println(
 								"Quel est son adresse privée ? (Tapez \"?\" si vous n'avez pas cette information)");
 						temp = sc.nextLine();
-						String adresse = (temp != "?") ? temp : null;
+						String adresse = null;
+						if (!temp.equals("?"))
+							adresse = temp;
 						System.out.println("Quel est son origine ? (Tapez \"?\" si vous n'avez pas cette information)");
 						temp = sc.nextLine();
-						String origine = (temp != "?") ? temp : null;
+						String origine = null;
+						if (!temp.equals("?"))
+							origine = temp;
 						System.out.println(
 								"Quel est son type de pouvoir ? (Tapez \"?\" si vous n'avez pas cette information)");
 						temp = sc.nextLine();
-						String type_pouvoir = (temp != "?") ? temp : null;
-						System.out.println(
-								"Quel est la puissance de son pouvoir? (Tapez \"?\" si vous n'avez pas cette information)");
+						String type_pouvoir = null;
+						if (!temp.equals("?"))
+							type_pouvoir = temp;
+						System.out.println("Quel est la puissance de son pouvoir?");
 						int puissance_pouvoir = sc.nextInt();
 						int choixFaction;
 						String faction = "";
@@ -196,7 +204,7 @@ public class AgentDuShyeld {
 						try {
 
 							PreparedStatement ps2 = conn
-									.prepareStatement("SELECT * FROM projetshyeld.ajoutersh(?,?,?,?,?,?,?)");
+									.prepareStatement("SELECT * FROM projetshyeld.ajoutersh(?,?,?,?,?,?,?,?,?,?,?)");
 							ps2.setString(1, nomCivil);
 							ps2.setString(2, nomSuperHero);
 							ps2.setString(3, adresse);
@@ -204,17 +212,23 @@ public class AgentDuShyeld {
 							ps2.setString(5, type_pouvoir);
 							ps2.setInt(6, puissance_pouvoir);
 							ps2.setString(7, faction);
+							ps2.setInt(8, idAgent);
+							ps2.setInt(9, x);
+							ps2.setInt(10, y);
+							ps2.setTimestamp(11, timestamp);
 							ps2.executeQuery();
 
-							PreparedStatement ps3 = conn
-									.prepareStatement("SELECT * FROM projetshyeld.ajouterreperage(?,?,?,?,?)");
-							ps3.setInt(1, idAgent);
-							ps3.setString(2, nomSuperHero);
-							ps3.setInt(3, x);
-							ps3.setInt(4, y);
-							ps3.setTimestamp(5, timestamp);
-							ps3.executeQuery();
-							System.out.println("Reperage de " + nomSuperHero + " en (" + x + ";" + y + ") enregisté !");
+							// PreparedStatement ps3 = conn
+							// .prepareStatement("SELECT * FROM
+							// projetshyeld.ajouterreperage(?,?,?,?,?)");
+							// ps3.setInt(1, idAgent);
+							// ps3.setString(2, nomSuperHero);
+							// ps3.setInt(3, x);
+							// ps3.setInt(4, y);
+							// ps3.setTimestamp(5, timestamp);
+							// ps3.executeQuery();
+							// System.out.println("Reperage de " + nomSuperHero
+							// + " en (" + x + ";" + y + ") enregisté !");
 
 						} catch (SQLException se) {
 							System.out.println(se.getMessage());

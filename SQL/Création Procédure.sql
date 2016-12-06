@@ -76,7 +76,7 @@ $$ LANGUAGE plpgsql;
 
 -- ajouterSuperheros
 -- ,INTEGER,INTEGER,INTEGER,TIMESTAMP
-CREATE OR REPLACE FUNCTION projetshyeld.ajoutersh(varchar(100),varchar(100),varchar(255),varchar(100),varchar(100),INTEGER,varchar(8)) RETURNS INTEGER AS 
+CREATE OR REPLACE FUNCTION projetshyeld.ajoutersh(varchar(100),varchar(100),varchar(255),varchar(100),varchar(100),INTEGER,varchar(8),INTEGER,INTEGER,INTEGER,TIMESTAMP) RETURNS INTEGER AS 
 $$
 DECLARE 
 	nom_civil_sh ALIAS FOR $1;
@@ -87,11 +87,11 @@ DECLARE
 	puissance_pouvoir_sh ALIAS FOR $6;
 	faction_sh ALIAS FOR $7;
 
-	--id_ag ALIAS FOR $8;
-	--c_x ALIAS FOR $9;
-	--c_y ALIAS FOR $10;
-	--date_rep ALIAS FOR $11;
-
+	id_ag ALIAS FOR $8;
+	c_x ALIAS FOR $9;
+	c_y ALIAS FOR $10;
+	date_rep ALIAS FOR $11;
+	id_rep INTEGER:=0;
 	id INTEGER:=0;
 BEGIN
 	IF EXISTS(SELECT * FROM projetshyeld.superheros sh
@@ -109,7 +109,7 @@ BEGIN
 		(DEFAULT,nom_civil_sh,nom_sh_sh,adresse_privee_sh,origine_sh,type_pouvoir_sh,puissance_pouvoir_sh,faction_sh,0,0,0,'vivant')
 		RETURNING id_sh INTO id;
 	--ajoute un reperage 
-	--SELECT * FROM projetshyeld.ajouterreperage(id_ag,nom_sh_sh,c_x,c_y,date_rep);
+	id_rep := projetshyeld.ajouterreperage(id_ag,nom_sh_sh,c_x,c_y,date_rep);
 
 	return id;
 END
@@ -182,7 +182,79 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+
+CREATE OR REPLACE FUNCTION ajouterCombat(INTEGER,INTEGER,INTEGER,TIMESTAMP) RETURNS INTEGER AS 
+$$
+DECLARE
+	id_ag ALIAS FOR $1;
+	c_x ALIAS FOR $2;
+	c_y ALIAS FOR $3;
+	date_c ALIAS FOR $4;
+	id INTEGER:=0;
+BEGIN
+	IF (c_x > 100 OR c_x <0)
+	THEN 
+		RAISE EXCEPTION 'Coordonée x doit etre comprise entre 0 et 100';
+	END IF;
+
+	IF (c_y > 100 OR c_y <0)
+	THEN 
+		RAISE EXCEPTION 'Coordonée y doit etre comprise entre 0 et 100';
+	END IF;
+
+	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
+			WHERE a.id_agent = id_ag
+			AND a.etat = 'actif') THEN
+		RAISE EXCEPTION 'Auncun agent actif avec cet id';
+	END IF;
+
+	INSERT INTO projetshyeld.combats
+	VALUES (DEFAULT,id_ag,c_x,c_y,date_rep)
+	RETURNING id_combat INTO id;
+
+	return id;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION ajouterParticipation(INTEGER,VARCHAR(100),varchar(8))RETURNS INTEGER AS 
+$$
+DECLARE
+	id_combat ALIAS FOR $1;
+	nom_suhe ALIAS FOR $2;
+	result ALIAS FOR $3;
+	
+	id_suhe INTEGER:=-1;
+BEGIN
+	IF( resultat NOT IN ('victoire','defaite') AND resultat != NULL)
+	THEN
+		RAISE EXCEPTION 'Le resultat du combat ne peut etre que "victoire", "defaite" ou null' ;
+	END IF;
+
+	IF NOT EXISTS(SELECT * FROM projetshyeld.combats c
+			WHERE c.id_combats = id_combat) THEN
+		RAISE EXCEPTION 'Aucun combat avec cet id';
+	END IF;
+
+	SELECT sh.id_sh INTO id_suhe
+	FROM projetshyeld.superheros sh
+	WHERE sh.nom_sh=nom_suhe AND etat='vivant';
+	
+	IF (id_suhe IS NULL)
+	THEN 
+		RAISE EXCEPTION 'Aucun hero vivant avec ce nom';
+	END IF;
+
+	INSERT INTO projetshyeld.combats
+	VALUES (id_combat,id_suhe,result);
+
+	return 0;
+	
+END;
+$$ LANGUAGE plpgsql;
+
 --Procedure pour triger
+
 -- augmenter nbReperages
 CREATE OR REPLACE FUNCTION triger_incNbReperages() RETURNS TRIGGER AS $triger_incNbReperages$
 BEGIN
