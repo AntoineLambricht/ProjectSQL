@@ -60,7 +60,7 @@ CREATE TABLE projetshyeld.combats(
 );
 
 
-CREATE TABLE projetshyeld.participation(
+CREATE TABLE projetshyeld.participations(
 	id_combat INTEGER NOT NULL REFERENCES projetshyeld.combats (id_combat),
 	id_sh INTEGER REFERENCES projetshyeld.superheros (id_sh),
 	resultat VARCHAR(8) CHECK (resultat IN ('victoire','defaite') OR resultat = NULL),

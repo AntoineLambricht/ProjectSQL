@@ -245,7 +245,7 @@ BEGIN
 		RAISE EXCEPTION 'Aucun hero vivant avec ce nom';
 	END IF;
 
-	INSERT INTO projetshyeld.combats
+	INSERT INTO projetshyeld.participations
 	VALUES (id_c,id_suhe,result);
 
 	return 0;

@@ -43,8 +43,12 @@ CREATE OR REPLACE VIEW projetshyeld.zonededanger AS
 	AND dr1.id_reperage<dr2.id_reperage;
 
 CREATE OR REPLACE VIEW projetshyeld.infoShVivant AS 
-	SELECT sh.nom_civil,sh.nom_sh,sh.adresse_privee,sh.origine,sh.type_pouvoir,sh.puissance_pouvoir,sh.faction,sh.nb_victoire,sh.nb_defaite,sh.nb_part,concat('(',dr.coord_x,'-',dr.coord_y,')') AS "Coordonées"
+	(SELECT sh.nom_civil,sh.nom_sh,sh.adresse_privee,sh.origine,sh.type_pouvoir,sh.puissance_pouvoir,sh.faction,sh.nb_victoire,sh.nb_defaite,sh.nb_part,concat('(',dr.coord_x,'-',dr.coord_y,')') AS "Coordonées"
 	FROM projetshyeld.superheros sh, projetshyeld.dernierReperages dr
 	WHERE sh.id_sh = dr.id_sh
-	AND sh.etat='vivant'
-
+	AND sh.etat='vivant')
+	UNION
+	(SELECT sh.nom_civil,sh.nom_sh,sh.adresse_privee,sh.origine,sh.type_pouvoir,sh.puissance_pouvoir,sh.faction,sh.nb_victoire,sh.nb_defaite,sh.nb_part,'Jammais repèré'
+	FROM projetshyeld.superheros sh
+	WHERE sh.id_sh NOT IN (SELECT dr.id_sh FROM projetshyeld.dernierReperages dr)
+	AND sh.etat='vivant')

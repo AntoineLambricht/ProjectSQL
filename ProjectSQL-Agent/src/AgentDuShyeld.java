@@ -168,35 +168,35 @@ public class AgentDuShyeld {
 					System.out.println("3 -> Ni victoire ni défaite");
 					choixResult = sc.nextInt();
 				} while (choixResult < 1 || choixResult > 3);
-				
+
 				String result = null;
-				if(choixResult == 1) result = "victoire";
-				if(choixResult == 2) result = "defaite";
-				
+				if (choixResult == 1)
+					result = "victoire";
+				if (choixResult == 2)
+					result = "defaite";
+
 				try {
 
-					PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.ajouterParticipation(?,?,?)");
+					PreparedStatement ps = conn
+							.prepareStatement("SELECT * FROM projetshyeld.ajouterParticipation(?,?,?)");
 					ps.setInt(1, idCombat);
 					ps.setString(2, nomSuperHero);
 					ps.setString(3, result);
 					ps.executeQuery();
-					
 
 				} catch (SQLException se) {
 					System.out.println(se.getMessage());
 					se.printStackTrace();
 				}
-				
-				
-				do{
-				System.out.println("Ajouter une autre participation ?");
-				System.out.println("1 -> Oui");
-				System.out.println("2 -> Non");
-				choixParticipation = sc.nextInt();
-				}while (choixParticipation != 1 && choixParticipation != 2);
+
+				do {
+					System.out.println("Ajouter une autre participation ?");
+					System.out.println("1 -> Oui");
+					System.out.println("2 -> Non");
+					choixParticipation = sc.nextInt();
+				} while (choixParticipation != 1 && choixParticipation != 2);
 			} while (choixParticipation == 1);
-			
-			
+
 		}
 	}
 
@@ -208,13 +208,17 @@ public class AgentDuShyeld {
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM projetshyeld.infoShVivant WHERE nom_sh=?");
 			ps.setString(1, nomSuperHero);
 			ResultSet rs = ps.executeQuery();
-
+			System.out.printf("%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s\n", "Nom Civil", "Adresse",
+					"Origine", "Type de pouvoir", "Puissance", "Faction", "Victoires", "Defaites", "Participations",
+					"Coordonées");
+			System.out.println(
+					"-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			if (rs.next()) {
-				System.out.println(rs.getString("nom_civil") + "-" + rs.getString("adresse_privee") + "-"
-						+ rs.getString("origine") + "-" + rs.getString("type_pouvoir") + "-"
-						+ rs.getInt("puissance_pouvoir") + "-" + rs.getString("faction") + "-"
-						+ rs.getString("nb_victoire") + "-" + rs.getString("nb_defaite") + "-" + rs.getString("nb_part")
-						+ "-" + rs.getString("Coordonées"));
+				System.out.printf("%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s|%-20s\n",
+						rs.getString("nom_civil"), rs.getString("adresse_privee"), rs.getString("origine"),
+						rs.getString("type_pouvoir"), rs.getInt("puissance_pouvoir"), rs.getString("faction"),
+						rs.getString("nb_victoire"), rs.getString("nb_defaite"), rs.getString("nb_part"),
+						rs.getString("Coordonées"));
 
 			} else {
 				System.out.println("Ce hero n'existe pas ou est mort!");

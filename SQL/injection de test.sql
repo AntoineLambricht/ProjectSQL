@@ -2,9 +2,9 @@
 
 -- ajout agent
 
-SELECT * FROM projetshyeld.inscrireAgent('Lambricht','Antoine','mdpnul');
-SELECT * FROM projetshyeld.inscrireAgent('Fury','Nick','mdpnul');
-SELECT * FROM projetshyeld.inscrireAgent('Coulson','Phil','mdpnul');
+--SELECT * FROM projetshyeld.inscrireAgent('Lambricht','Antoine','mdpnul');
+--SELECT * FROM projetshyeld.inscrireAgent('Fury','Nick','mdpnul');
+--SELECT * FROM projetshyeld.inscrireAgent('Coulson','Phil','mdpnul');
 
 
 
