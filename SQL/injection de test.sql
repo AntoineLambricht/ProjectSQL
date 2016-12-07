@@ -49,3 +49,4 @@ SELECT * FROM projetshyeld.heroperdu;
 SELECT * FROM projetshyeld.dernierReperages;
 SELECT * FROM projetshyeld.zonededanger;
 SELECT * FROM projetshyeld.infoShVivant;
+SELECT * FROM projetshyeld.combats;

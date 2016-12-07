@@ -11,8 +11,8 @@ import org.mindrot.jbcrypt.BCrypt;
 public class Agent {
 
 	private final static Scanner sc = new Scanner(System.in);
-	private static Connection conn = null;
 	private static int id = 0;
+	private Connection conn;
 
 	private PreparedStatement agents, ajouterreperage, ajouterCombat, ajouterParticipation, infoShVivant, ajoutersh;
 
@@ -27,6 +27,7 @@ public class Agent {
 
 		System.out.println("Connection...");
 		String url = "jdbc:postgresql://localhost:5432/projetshyeld" + "?user=postgres&password=Pataques7";
+		conn = null;
 		try {
 			conn = DriverManager.getConnection(url);
 			System.out.println("Connection établie!");
@@ -113,8 +114,15 @@ public class Agent {
 	}
 
 	public void ajouterCombat() {
+		try {
+			conn.setAutoCommit(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		int idCombat = 0;
 		boolean combatCree = false;
+		boolean aMarvelle = false;
+		boolean aDece = false;
 		System.out.println("Ajout du Combat:");
 		System.out.println(" *Coordonées:");
 		System.out.print("   -X:");
@@ -131,7 +139,6 @@ public class Agent {
 			ResultSet rs = ajouterCombat.executeQuery();
 			if (rs.next()) {
 				idCombat = rs.getInt(1);
-				System.out.println("Combat n°" + idCombat + " en (" + x + ";" + y + ") enregisté !");
 				combatCree = true;
 			}
 
@@ -161,17 +168,25 @@ public class Agent {
 					result = "victoire";
 				if (choixResult == 2)
 					result = "defaite";
-
 				try {
 
 					ajouterParticipation.setInt(1, idCombat);
 					ajouterParticipation.setString(2, nomSuperHero);
 					ajouterParticipation.setString(3, result);
-					ajouterParticipation.executeQuery();
+					ResultSet rs = ajouterParticipation.executeQuery();
+					if (rs.next()) {
+						// fonction sql retourne 1 si la faction est marvelle ,
+						// 2 si c'est Dece
+						int faction = rs.getInt(1);
+						if (faction == 1)
+							aMarvelle = true;
+						if (faction == 2)
+							aDece = true;
+					}
 
 				} catch (SQLException se) {
 					System.out.println(se.getMessage());
-					se.printStackTrace();
+					// se.printStackTrace();
 				}
 
 				do {
@@ -181,7 +196,26 @@ public class Agent {
 					choixParticipation = sc.nextInt();
 				} while (choixParticipation != 1 && choixParticipation != 2);
 			} while (choixParticipation == 1);
+			try {
+				if (!combatCree) {
+					System.out.println("Combat non créé. Rien n'a été enregistré");
+					conn.rollback();
+				} else if (!aDece || !aMarvelle) {
+					System.out.println("Le combat doit au moins contenir 1 Marvelle et 1 Dece.  Rien n'a été enregistré");
+					conn.rollback();
+				} else{
+					System.out.println("Combat n°" + idCombat + " en (" + x + ";" + y + ") enregisté !");
+					conn.commit();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 
+		}
+		try {
+			conn.setAutoCommit(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 

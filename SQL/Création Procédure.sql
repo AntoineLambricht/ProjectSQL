@@ -225,6 +225,8 @@ DECLARE
 	result ALIAS FOR $3;
 	
 	id_suhe INTEGER:=-1;
+	faction_sh VARCHAR(8):='';
+	
 BEGIN
 	IF( result NOT IN ('victoire','defaite') AND result != NULL)
 	THEN
@@ -236,9 +238,11 @@ BEGIN
 		RAISE EXCEPTION 'Aucun combat avec cet id';
 	END IF;
 
-	SELECT sh.id_sh INTO id_suhe
+	SELECT sh.id_sh,sh.faction INTO id_suhe,faction_sh
 	FROM projetshyeld.superheros sh
 	WHERE sh.nom_sh=nom_suhe AND etat='vivant';
+
+	
 	
 	IF (id_suhe IS NULL)
 	THEN 
@@ -248,6 +252,12 @@ BEGIN
 	INSERT INTO projetshyeld.participations
 	VALUES (id_c,id_suhe,result);
 
+	IF(faction_sh = 'marvelle')THEN
+		return 1;
+	ELSIF (faction_sh = 'dece')THEN
+		return 2;
+	END IF;
+	
 	return 0;
 	
 END;
@@ -264,6 +274,30 @@ BEGIN
 	RETURN NULL;
 END;
 $triger_incNbReperages$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION triger_incParticipations() RETURNS TRIGGER AS $triger_incParticipations$
+BEGIN
+
+	IF (NEW.resultat = 'victoire') THEN
+		UPDATE projetshyeld.superheros
+		SET nb_victoire = nb_victoire + 1,
+			nb_part = nb_part + 1
+		WHERE id_sh = NEW.id_sh;
+	ELSIF (NEW.resultat = 'defaite') THEN
+		UPDATE projetshyeld.superheros
+		SET nb_defaite = nb_defaite + 1,
+			nb_part = nb_part + 1
+		WHERE id_sh = NEW.id_sh;
+	ELSE
+		UPDATE projetshyeld.superheros
+		SET nb_part = nb_part + 1
+		WHERE id_sh = NEW.id_sh;
+	END IF;
+	
+	RETURN NULL;
+	
+END;
+$triger_incParticipations$ LANGUAGE plpgsql;
 
 --SELECT * FROM projetshyeld.mortAgent(1);
 

@@ -1,12 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Scanner;
-
-import org.mindrot.jbcrypt.BCrypt;
 
 public class MainAppAgent {
 
@@ -21,7 +13,7 @@ public class MainAppAgent {
 			System.out.println("1 -> Info super-hero");
 			System.out.println("2 -> Raport de combat");
 			System.out.println("3 -> Repérage");
-			System.out.println("0 -> Quitter");
+			System.out.println("0 -> Deconnexion");
 			System.out.println("---------------------------------");
 			choix = sc.nextInt();
 
