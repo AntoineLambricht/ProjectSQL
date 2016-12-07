@@ -64,5 +64,6 @@ CREATE TABLE projetshyeld.participations(
 	id_combat INTEGER NOT NULL REFERENCES projetshyeld.combats (id_combat),
 	id_sh INTEGER REFERENCES projetshyeld.superheros (id_sh),
 	resultat VARCHAR(8) CHECK (resultat IN ('victoire','defaite') OR resultat = NULL),
+	UNIQUE(id_sh,id_combat),
 	PRIMARY KEY (id_combat,id_sh)
 );
