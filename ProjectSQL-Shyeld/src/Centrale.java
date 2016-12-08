@@ -3,6 +3,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -10,7 +13,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class Centrale {
 
 	private final static Scanner sc = new Scanner(System.in);
-	private PreparedStatement heroperdu, mortsh, zonededanger, retraiteAgent, mortAgent, inscrireAgent;
+	private PreparedStatement heroperdu, mortsh, zonededanger, retraiteAgent, mortAgent, inscrireAgent, reperageParDate;
 
 	public Centrale() {
 		try {
@@ -38,6 +41,8 @@ public class Centrale {
 			retraiteAgent = conn.prepareStatement("SELECT * FROM projetshyeld.retraiteAgent(?)");
 			mortAgent = conn.prepareStatement("SELECT * FROM projetshyeld.mortAgent(?)");
 			inscrireAgent = conn.prepareStatement("SELECT * FROM projetshyeld.inscrireAgent(?,?,?)");
+			reperageParDate = conn.prepareStatement("SELECT * FROM projetshyeld.reperageParDate(?,?,?)");
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -97,7 +102,49 @@ public class Centrale {
 	}
 
 	public void releveAgent() {
-		// TODO Auto-generated method stub
+		boolean date1ok = true;
+		boolean date2ok = true;
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		System.out.print("Id de l'agent :");
+		int id = sc.nextInt();
+
+		System.out.println("Date 1 (\"jour/mois/année\"):");
+		String sDate1 = sc.next();
+
+		Date date1 = null;
+		try {
+			date1 = sdf.parse(sDate1);
+		} catch (ParseException e) {
+			System.out.println("Format de la date incorrecte");
+			date1ok = false;
+		}
+
+		System.out.println("Date 2 (\"jour/mois/année\"):");
+		String sDate2 = sc.next();
+		Date date2 = null;
+		if (date1ok) {
+
+			try {
+				date2 = sdf.parse(sDate2);
+			} catch (ParseException e) {
+				System.out.println("Format de la date incorrecte");
+				date2ok = false;
+			}
+		}
+		if (date2ok) {
+			try {
+				reperageParDate.setInt(1, id);
+				reperageParDate.setDate(2, new java.sql.Date(date1.getTime()));
+				reperageParDate.setDate(3, new java.sql.Date(date2.getTime()));
+				ResultSet rs = reperageParDate.executeQuery();
+				while (rs.next()) {
+					System.out.println(rs.toString());
+
+				}
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 
 	}
 

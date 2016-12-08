@@ -262,7 +262,26 @@ BEGIN
 	
 END;
 $$ LANGUAGE plpgsql;
+--DROP FUNCTION projetshyeld.reperagepardate(integer,character varying,character varying);
+CREATE OR REPLACE FUNCTION projetshyeld.reperageParDate(INTEGER,DATE,DATE) RETURNS projetshyeld.reperages AS
+$$
+DECLARE
+	id_ag ALIAS FOR $1;
+	d1 ALIAS FOR $2;
+	d2 ALIAS FOR $3;
+BEGIN
+	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
+			WHERE a.id_agent = id_ag
+			AND a.etat = 'actif') THEN
+		RAISE EXCEPTION 'Auncun agent actif avec cet id';
+	END IF;
 
+	SELECT * 
+	FROM projetshyeld.reperages r 
+	WHERE r.id_agent = id_ag
+	AND r.date_reperage BETWEEN d1 AND d2;
+END;
+$$ LANGUAGE plpgsql;
 --Procedure pour triger
 
 -- augmenter nbReperages
@@ -275,6 +294,7 @@ BEGIN
 END;
 $triger_incNbReperages$ LANGUAGE plpgsql;
 
+-- agmenter nb_part,nb_victoire,nb_defaite
 CREATE OR REPLACE FUNCTION triger_incParticipations() RETURNS TRIGGER AS $triger_incParticipations$
 BEGIN
 

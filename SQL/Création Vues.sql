@@ -52,3 +52,5 @@ CREATE OR REPLACE VIEW projetshyeld.infoShVivant AS
 	FROM projetshyeld.superheros sh
 	WHERE sh.id_sh NOT IN (SELECT dr.id_sh FROM projetshyeld.dernierReperages dr)
 	AND sh.etat='vivant')
+
+
