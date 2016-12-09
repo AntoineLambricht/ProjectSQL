@@ -262,24 +262,29 @@ BEGIN
 	
 END;
 $$ LANGUAGE plpgsql;
---DROP FUNCTION projetshyeld.reperagepardate(integer,character varying,character varying);
-CREATE OR REPLACE FUNCTION projetshyeld.reperageParDate(INTEGER,DATE,DATE) RETURNS projetshyeld.reperages AS
+--DROP FUNCTION projetshyeld.reperagepardate(INTEGER,DATE,DATE);
+CREATE OR REPLACE FUNCTION projetshyeld.reperageParDate(INTEGER,DATE,DATE) RETURNS SETOF record AS
 $$
 DECLARE
 	id_ag ALIAS FOR $1;
 	d1 ALIAS FOR $2;
 	d2 ALIAS FOR $3;
+	r record;
 BEGIN
 	IF NOT EXISTS(SELECT * FROM projetshyeld.agents a
-			WHERE a.id_agent = id_ag
-			AND a.etat = 'actif') THEN
-		RAISE EXCEPTION 'Auncun agent actif avec cet id';
+			WHERE a.id_agent = id_ag) THEN
+		RAISE EXCEPTION 'Auncun agent avec cet id';
 	END IF;
 
-	SELECT * 
-	FROM projetshyeld.reperages r 
-	WHERE r.id_agent = id_ag
-	AND r.date_reperage BETWEEN d1 AND d2;
+	FOR r IN SELECT sh.nom_sh AS "Nom de Super-hero",rep.date_reperage AS "Date",concat('(',rep.coord_x,'-',rep.coord_y,')') AS "Coordonées"
+		FROM projetshyeld.reperages rep,projetshyeld.superheros sh
+		WHERE rep.id_agent = id_ag
+		AND rep.id_sh = sh.id_sh
+		AND rep.date_reperage BETWEEN d1 AND (d2 + interval '1 day')
+	LOOP
+		RETURN NEXT r;
+	END LOOP;
+	RETURN;
 END;
 $$ LANGUAGE plpgsql;
 --Procedure pour triger

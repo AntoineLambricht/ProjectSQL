@@ -19,8 +19,8 @@ public class MainAppCentrale {
 			System.out.println("7 -> Statistiques");
 			System.out.println("0 -> Quitter");
 			System.out.println("---------------------------------");
-
 			choix = sc.nextInt();
+			sc.nextLine();
 
 			switch (choix) {
 			case 1:

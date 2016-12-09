@@ -16,6 +16,7 @@ public class MainAppAgent {
 			System.out.println("0 -> Deconnexion");
 			System.out.println("---------------------------------");
 			choix = sc.nextInt();
+			sc.nextLine();
 
 			switch (choix) {
 			case 1:

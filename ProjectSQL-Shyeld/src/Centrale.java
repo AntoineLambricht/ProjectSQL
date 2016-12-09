@@ -41,7 +41,7 @@ public class Centrale {
 			retraiteAgent = conn.prepareStatement("SELECT * FROM projetshyeld.retraiteAgent(?)");
 			mortAgent = conn.prepareStatement("SELECT * FROM projetshyeld.mortAgent(?)");
 			inscrireAgent = conn.prepareStatement("SELECT * FROM projetshyeld.inscrireAgent(?,?,?)");
-			reperageParDate = conn.prepareStatement("SELECT * FROM projetshyeld.reperageParDate(?,?,?)");
+			reperageParDate = conn.prepareStatement("SELECT * FROM projetshyeld.reperageParDate(?,?,?) tmp(nom varchar, date timestamp, coord text)");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -102,14 +102,15 @@ public class Centrale {
 	}
 
 	public void releveAgent() {
+		//TODO ajouter relevé de combats
 		boolean date1ok = true;
 		boolean date2ok = true;
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		System.out.print("Id de l'agent :");
 		int id = sc.nextInt();
-
+		sc.nextLine();
 		System.out.println("Date 1 (\"jour/mois/année\"):");
-		String sDate1 = sc.next();
+		String sDate1 = sc.nextLine();
 
 		Date date1 = null;
 		try {
@@ -120,7 +121,7 @@ public class Centrale {
 		}
 
 		System.out.println("Date 2 (\"jour/mois/année\"):");
-		String sDate2 = sc.next();
+		String sDate2 = sc.nextLine();
 		Date date2 = null;
 		if (date1ok) {
 
@@ -137,8 +138,11 @@ public class Centrale {
 				reperageParDate.setDate(2, new java.sql.Date(date1.getTime()));
 				reperageParDate.setDate(3, new java.sql.Date(date2.getTime()));
 				ResultSet rs = reperageParDate.executeQuery();
+				System.out.printf("%-20s|%-25s|%-20s\n", "Nom de Super-hero", "Date", "Coordonées");
+				System.out.println("-------------------------------------------------------------------------");
 				while (rs.next()) {
-					System.out.println(rs.toString());
+					System.out.printf("%-20s|%-25s|%-20s\n", rs.getString("nom"), rs.getDate("date"),
+							rs.getString("coord"));
 
 				}
 			} catch (SQLException e) {
@@ -164,9 +168,11 @@ public class Centrale {
 			System.out.println("autre -> Annuler");
 
 			int choix = sc.nextInt();
+			sc.nextLine();
+			System.out.println("Id de l'agent:");
+			int id = sc.nextInt();
 			if (choix == 1) {
-				System.out.println("Id de l'agent:");
-				int id = sc.nextInt();
+				sc.nextLine();
 				try {
 					retraiteAgent.setInt(1, id);
 					retraiteAgent.executeQuery();
@@ -177,8 +183,6 @@ public class Centrale {
 					ok = false;
 				}
 			} else if (choix == 2) {
-				System.out.println("Id de l'agent:");
-				int id = sc.nextInt();
 				try {
 					mortAgent.setInt(1, id);
 					mortAgent.executeQuery();
@@ -215,9 +219,7 @@ public class Centrale {
 				System.out.println("Id de l'agent : " + id);
 			}
 		} catch (SQLException se) {
-			System.out.println("Erreur lors de l'utilisation de l'inscription d'un agent!");
-			se.printStackTrace();
-			System.exit(1);
+			System.out.println(se.getMessage());
 		}
 
 	}

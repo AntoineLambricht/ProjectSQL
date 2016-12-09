@@ -56,8 +56,10 @@ public class Agent {
 			System.out.println("---LOGIN---");
 			System.out.println("Id:");
 			id = sc.nextInt();
+			sc.nextLine();
 			System.out.println("Mot de passe:");
 			String mdp = sc.next();
+			sc.nextLine();
 
 			try {
 
@@ -87,14 +89,15 @@ public class Agent {
 	}
 
 	public void reperage() {
-		sc.nextLine();
 		System.out.print("Nom du hero :");
 		String nomSuperHero = sc.nextLine();
 		System.out.println("Coordonées:");
 		System.out.print("   -X:");
 		int x = sc.nextInt();
+		sc.nextLine();
 		System.out.print("   -Y:");
 		int y = sc.nextInt();
+		sc.nextLine();
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 		try {
@@ -109,6 +112,7 @@ public class Agent {
 
 		} catch (SQLException se) {
 			System.out.println(se.getMessage());
+			//TODO Si hero n'existe pas , demander si l'ajouter
 		}
 
 	}
@@ -127,8 +131,10 @@ public class Agent {
 		System.out.println(" *Coordonées:");
 		System.out.print("   -X:");
 		int x = sc.nextInt();
+		sc.nextLine();
 		System.out.print("   -Y:");
 		int y = sc.nextInt();
+		sc.nextLine();
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		try {
 
@@ -150,7 +156,6 @@ public class Agent {
 			System.out.println(" *Participations:");
 			int choixParticipation;
 			do {
-				sc.nextLine();
 				System.out.print("Nom du hero :");
 				String nomSuperHero = sc.nextLine();
 				int choixResult;
@@ -161,6 +166,7 @@ public class Agent {
 					System.out.println("2 -> Défaite");
 					System.out.println("3 -> Ni victoire ni défaite");
 					choixResult = sc.nextInt();
+					sc.nextLine();
 				} while (choixResult < 1 || choixResult > 3);
 
 				String result = null;
@@ -194,6 +200,7 @@ public class Agent {
 					System.out.println("1 -> Oui");
 					System.out.println("2 -> Non");
 					choixParticipation = sc.nextInt();
+					sc.nextLine();
 				} while (choixParticipation != 1 && choixParticipation != 2);
 			} while (choixParticipation == 1);
 			try {
@@ -201,9 +208,10 @@ public class Agent {
 					System.out.println("Combat non créé. Rien n'a été enregistré");
 					conn.rollback();
 				} else if (!aDece || !aMarvelle) {
-					System.out.println("Le combat doit au moins contenir 1 Marvelle et 1 Dece.  Rien n'a été enregistré");
+					System.out
+							.println("Le combat doit au moins contenir 1 Marvelle et 1 Dece.  Rien n'a été enregistré");
 					conn.rollback();
-				} else{
+				} else {
 					System.out.println("Combat n°" + idCombat + " en (" + x + ";" + y + ") enregisté !");
 					conn.commit();
 				}
@@ -221,7 +229,6 @@ public class Agent {
 
 	public void infoSuperHero() {
 		try {
-			sc.nextLine();
 			System.out.print("Nom du hero :");
 			String nomSuperHero = sc.nextLine();
 
@@ -247,8 +254,8 @@ public class Agent {
 					System.out.println("1 -> Oui");
 					System.out.println("2 -> Non");
 					choix = sc.nextInt();
+					sc.nextLine();
 					if (choix == 1) {
-						sc.nextLine();
 						String temp;
 						System.out
 								.println("Quel est son nom civil ? (Tapez \"?\" si vous n'avez pas cette information)");
@@ -275,6 +282,7 @@ public class Agent {
 							type_pouvoir = temp;
 						System.out.println("Quel est la puissance de son pouvoir?");
 						int puissance_pouvoir = sc.nextInt();
+						sc.nextLine();
 						int choixFaction;
 						String faction = "";
 						do {
@@ -282,6 +290,7 @@ public class Agent {
 							System.out.println("1 -> Marvelle");
 							System.out.println("2 -> Dece");
 							choixFaction = sc.nextInt();
+							sc.nextLine();
 							if (choixFaction == 1)
 								faction = "marvelle";
 							else if (choixFaction == 2)
@@ -294,8 +303,10 @@ public class Agent {
 						System.out.println("Coordonées:");
 						System.out.print("   -X:");
 						int x = sc.nextInt();
+						sc.nextLine();
 						System.out.print("   -Y:");
 						int y = sc.nextInt();
+						sc.nextLine();
 						Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 						// sql
 						try {
