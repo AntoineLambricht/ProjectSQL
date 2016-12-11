@@ -17,7 +17,7 @@
 INSERT INTO projetshyeld.superheros 
 VALUES (DEFAULT,'Christophe Damas','Docteur Dramas','Dans son labo secret','Terre','Scientifique fous',50,'dece',0,0,0,'vivant');
 INSERT INTO projetshyeld.superheros 
-VALUES (DEFAULT,'Stéphanie Ferneeuw','Madame Faire Mieux','30 rue du pas parfais','Pluton','Mutations génétique',72,'dece',0,0,0,'vivant');
+VALUES (DEFAULT,'Stéphanie Ferneeuw','Faire Mieux','30 rue du pas parfais','Pluton','Mutations génétique',72,'dece',0,0,0,'vivant');
 INSERT INTO projetshyeld.superheros 
 VALUES (DEFAULT,'Donatien Grolaux','Gloriaux','Monoir Grolaux','Terre','arts-martiaux',86,'marvelle',0,0,0,'vivant');
 INSERT INTO projetshyeld.superheros 

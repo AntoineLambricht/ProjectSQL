@@ -30,7 +30,7 @@ CREATE TABLE projetshyeld.superheros(
 	adresse_privee VARCHAR(255),
 	origine VARCHAR(100),
 	type_pouvoir VARCHAR(100),
-	puissance_pouvoir INTEGER,
+	puissance_pouvoir INTEGER NOT NULL,
 	faction VARCHAR(8) NOT NULL CHECK (faction IN ('marvelle','dece')), 
 	nb_victoire INTEGER NOT NULL CHECK (nb_victoire>=0),
 	nb_defaite INTEGER NOT NULL CHECK (nb_defaite>=0),
@@ -44,7 +44,7 @@ CREATE TABLE projetshyeld.reperages(
 	id_agent INTEGER  NOT NULL REFERENCES projetshyeld.agents (id_agent),
 	id_sh INTEGER NOT NULL REFERENCES projetshyeld.superheros (id_sh),
 	coord_x INTEGER NOT NULL CHECK (coord_x >= 0 AND coord_x <= 100),
-	coord_y INTEGER NOT NULL CHECK (coord_y >= 0 AND coord_y <= 100),
+	coord_y INTEGER NOT NULL CHECK (coord_y >= 0 AND coord_y <= 100),(FK)(FK)
 	date_reperage TIMESTAMP NOT NULL,
 	UNIQUE(id_sh,date_reperage)
 );
